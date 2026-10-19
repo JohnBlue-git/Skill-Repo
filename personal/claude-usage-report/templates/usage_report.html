@@ -1,0 +1,457 @@
+<title>Claude Code Usage</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page-plane:     #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted:     #898781;
+    --grid:           #e1e0d9;
+    --baseline:       #c3c2b7;
+    --series-1:       #2a78d6;
+    --series-1-soft:  #2a78d61a;
+    --border:         rgba(11,11,11,0.10);
+    --tooltip-bg:     #0b0b0b;
+    --tooltip-text:   #ffffff;
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    background: var(--page-plane);
+    color: var(--text-primary);
+    padding: 28px clamp(16px, 4vw, 40px) 40px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) .viz-root {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page-plane:     #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --text-muted:     #898781;
+      --grid:           #2c2c2a;
+      --baseline:       #383835;
+      --series-1:       #3987e5;
+      --series-1-soft:  #3987e526;
+      --border:         rgba(255,255,255,0.10);
+      --tooltip-bg:     #ffffff;
+      --tooltip-text:   #0b0b0b;
+    }
+  }
+  :root[data-theme="dark"] .viz-root {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page-plane:     #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --grid:           #2c2c2a;
+    --baseline:       #383835;
+    --series-1:       #3987e5;
+    --series-1-soft:  #3987e526;
+    --border:         rgba(255,255,255,0.10);
+    --tooltip-bg:     #ffffff;
+    --tooltip-text:   #0b0b0b;
+  }
+
+  .viz-root h1 { font-size: 22px; font-weight: 650; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .viz-root .subtitle { font-size: 13.5px; color: var(--text-secondary); margin: 0 0 24px; line-height: 1.5; max-width: 680px; }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .stat-tile {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .stat-label { font-size: 11.5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+  .stat-value { font-size: 21px; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .stat-sub { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+
+  .controls-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .segmented {
+    display: inline-flex;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .segmented button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    font-family: inherit;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+  .segmented button:hover { color: var(--text-primary); }
+  .segmented button.active { background: var(--series-1); color: #fff; }
+
+  .ghost-btn {
+    appearance: none;
+    border: 1px solid var(--border);
+    background: var(--surface-1);
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    font-family: inherit;
+    padding: 7px 12px;
+    border-radius: 9px;
+    cursor: pointer;
+    margin-left: auto;
+  }
+  .ghost-btn:hover { color: var(--text-primary); }
+
+  .chart-card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 18px 8px;
+    position: relative;
+  }
+  .chart-card svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .bar-hit { fill: transparent; cursor: pointer; }
+  .bar-fill { fill: var(--series-1); transition: opacity 0.1s ease; }
+  .bar-hit:hover + .bar-fill,
+  .bar-fill.hovered { opacity: 0.72; }
+  .gridline { stroke: var(--grid); stroke-width: 1; }
+  .baseline { stroke: var(--baseline); stroke-width: 1; }
+  .axis-label { fill: var(--text-muted); font-size: 11px; font-family: inherit; }
+  .y-axis-label { fill: var(--text-muted); font-size: 11px; font-family: inherit; text-anchor: end; }
+
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 13px; }
+
+  .tooltip {
+    position: absolute;
+    background: var(--tooltip-bg);
+    color: var(--tooltip-text);
+    padding: 8px 11px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.5;
+    pointer-events: none;
+    white-space: nowrap;
+    transform: translate(-50%, -100%);
+    margin-top: -10px;
+    z-index: 5;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+  }
+  .tooltip .t-period { font-weight: 650; margin-bottom: 2px; }
+  .tooltip .t-row { display: flex; justify-content: space-between; gap: 14px; opacity: 0.88; }
+
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  table.data-table th, table.data-table td {
+    text-align: right;
+    padding: 9px 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  table.data-table th:first-child, table.data-table td:first-child { text-align: left; font-variant-numeric: normal; }
+  table.data-table thead th { color: var(--text-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; font-weight: 600; border-bottom: 1px solid var(--border); }
+  table.data-table tbody tr:not(:last-child) td { border-bottom: 1px solid var(--grid); }
+  table.data-table tbody tr:hover { background: var(--series-1-soft); }
+
+  footer.viz-footer {
+    margin-top: 18px;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+  footer.viz-footer code {
+    background: var(--grid);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 11.5px;
+  }
+</style>
+
+<div class="viz-root">
+  <h1>Claude Code usage</h1>
+  <p class="subtitle">
+    Reconstructed from local session transcripts in <code>~/.claude/projects</code>
+    (<span id="date-range">no data found</span>). Cost is an <strong>estimate</strong> at current per&#8209;token API
+    list pricing — it is not your bill if you're on a Pro/Max seat, and it only covers usage on this machine.
+  </p>
+
+  <div class="stat-row" id="stat-row"></div>
+
+  <div class="controls-row">
+    <div class="segmented" data-group="period">
+      <button data-value="daily">Daily</button>
+      <button data-value="weekly" class="active">Weekly</button>
+      <button data-value="monthly">Monthly</button>
+    </div>
+    <div class="segmented" data-group="metric">
+      <button data-value="cost" class="active">Cost ($)</button>
+      <button data-value="tokens">Tokens</button>
+    </div>
+    <button class="ghost-btn" id="toggle-table">View as table</button>
+  </div>
+
+  <div class="chart-card" id="chart-card">
+    <svg id="chart" viewBox="0 0 1000 420" preserveAspectRatio="xMinYMin meet"></svg>
+    <div class="tooltip" id="tooltip" hidden></div>
+  </div>
+
+  <div id="table-wrap" style="display:none;">
+    <table class="data-table" id="data-table">
+      <thead><tr><th>Period</th><th>Cost</th><th>Tokens</th><th>Messages</th></tr></thead>
+      <tbody id="table-body"></tbody>
+    </table>
+  </div>
+
+  <footer class="viz-footer">
+    <p>
+      For real-time balances, run <code>/usage</code> in Claude Code (toggle day/week with <code>d</code>/<code>w</code>) or
+      <code>/usage-credits</code> for plan billing settings — neither persists a weekly/monthly history across sessions, which
+      is what this page reconstructs from your local logs instead. Pricing comes from this skill's
+      <code>scripts/pricing.json</code> (current API list rates, standard cache read/write multipliers) — edit that file if
+      rates have changed.
+    </p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  const DAILY_RAW = __DAILY_DATA__;
+
+  const root = document.currentScript.previousElementSibling;
+  const svg = root.querySelector('#chart');
+  const tooltip = root.querySelector('#tooltip');
+  const chartCard = root.querySelector('#chart-card');
+  const statRow = root.querySelector('#stat-row');
+  const tableWrap = root.querySelector('#table-wrap');
+  const tableBody = root.querySelector('#table-body');
+  const toggleTableBtn = root.querySelector('#toggle-table');
+  const dateRangeEl = root.querySelector('#date-range');
+
+  const dates = Object.keys(DAILY_RAW).sort();
+
+  if (dates.length === 0) {
+    root.querySelector('.stat-row').remove();
+    root.querySelector('.controls-row').remove();
+    chartCard.innerHTML = '<div class="empty-state">No Claude Code session logs found under ~/.claude/projects on this machine yet.</div>';
+    return;
+  }
+
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const VBW = 1000, VBH = 420;
+  const MARGIN = { top: 20, right: 16, bottom: 42, left: 64 };
+
+  let state = { period: 'weekly', metric: 'cost', showTable: false };
+
+  function parseDate(s) { const [y,m,d] = s.split('-').map(Number); return new Date(Date.UTC(y, m-1, d)); }
+  function fmtDate(dt) { return dt.toISOString().slice(0,10); }
+  function addDays(dt, n) { const r = new Date(dt); r.setUTCDate(r.getUTCDate()+n); return r; }
+  function mondayOf(dt) { const r = new Date(dt); const dow = (r.getUTCDay()+6)%7; return addDays(r,-dow); }
+  function monthKey(dt) { return dt.getUTCFullYear() + '-' + String(dt.getUTCMonth()+1).padStart(2,'0'); }
+  function humanDate(dt) { return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][dt.getUTCMonth()] + ' ' + dt.getUTCDate() + ', ' + dt.getUTCFullYear(); }
+
+  const minDate = parseDate(dates[0]);
+  const maxDate = parseDate(dates[dates.length-1]);
+  dateRangeEl.textContent = humanDate(minDate) + ' to ' + humanDate(maxDate);
+
+  function emptyRec() { return { cost: 0, tokens: 0, messages: 0 }; }
+
+  const dailySeries = [];
+  for (let d = new Date(minDate); d <= maxDate; d = addDays(d,1)) {
+    const key = fmtDate(d);
+    const r = DAILY_RAW[key];
+    dailySeries.push({
+      label: key,
+      shortLabel: (d.getUTCMonth()+1) + '/' + d.getUTCDate(),
+      cost: r ? r.cost_usd : 0,
+      tokens: r ? r.total_tokens : 0,
+      messages: r ? r.messages : 0,
+    });
+  }
+
+  function aggregate(keyFn, labelFn) {
+    const map = new Map();
+    const order = [];
+    dailySeries.forEach(day => {
+      const dt = parseDate(day.label);
+      const k = keyFn(dt);
+      if (!map.has(k)) { map.set(k, emptyRec()); order.push(k); }
+      const rec = map.get(k);
+      rec.cost += day.cost; rec.tokens += day.tokens; rec.messages += day.messages;
+    });
+    return order.map(k => ({ label: k, shortLabel: labelFn(k), ...map.get(k) }));
+  }
+
+  const weeklySeries = aggregate(
+    dt => fmtDate(mondayOf(dt)),
+    k => { const d = parseDate(k); return (d.getUTCMonth()+1)+'/'+d.getUTCDate(); }
+  );
+  const monthlySeries = aggregate(
+    dt => monthKey(dt),
+    k => { const [y,m] = k.split('-'); return ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m,10)-1] + ' ' + y.slice(2); }
+  );
+
+  const SERIES = { daily: dailySeries, weekly: weeklySeries, monthly: monthlySeries };
+
+  function fmtCost(v) { return '$' + v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fmtTokens(v) {
+    if (v >= 1e6) return (v/1e6).toFixed(1) + 'M';
+    if (v >= 1e3) return (v/1e3).toFixed(1) + 'K';
+    return String(Math.round(v));
+  }
+  function niceMax(v) {
+    if (v <= 0) return 1;
+    const mag = Math.pow(10, Math.floor(Math.log10(v)));
+    const norm = v / mag;
+    let step;
+    if (norm <= 1) step = 1; else if (norm <= 2) step = 2; else if (norm <= 5) step = 5; else step = 10;
+    return step * mag;
+  }
+
+  function renderStats() {
+    const totalCost = dailySeries.reduce((s,d)=>s+d.cost, 0);
+    const totalTokens = dailySeries.reduce((s,d)=>s+d.tokens, 0);
+    const totalMsgs = dailySeries.reduce((s,d)=>s+d.messages, 0);
+    const activeDays = dailySeries.filter(d=>d.messages>0).length;
+    const tiles = [
+      ['Estimated cost', fmtCost(totalCost), dailySeries.length + '-day span'],
+      ['Total tokens', fmtTokens(totalTokens), 'input + output + cache'],
+      ['Messages', totalMsgs.toLocaleString('en-US'), 'assistant turns logged'],
+      ['Active days', activeDays + ' / ' + dailySeries.length, 'days with any usage'],
+    ];
+    statRow.innerHTML = tiles.map(([label,val,sub]) =>
+      '<div class="stat-tile"><div class="stat-label">'+label+'</div><div class="stat-value">'+val+'</div><div class="stat-sub">'+sub+'</div></div>'
+    ).join('');
+  }
+
+  function clearSvg() { while (svg.firstChild) svg.removeChild(svg.firstChild); }
+  function el(tag, attrs) {
+    const e = document.createElementNS(svgNS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function roundedTopPath(x, y, w, h, r) {
+    r = Math.min(r, w/2, h);
+    if (h <= 0) return 'M'+x+','+(y+h)+' L'+(x+w)+','+(y+h)+' Z';
+    return `M${x+r},${y} H${x+w-r} Q${x+w},${y} ${x+w},${y+r} V${y+h} H${x} V${y+r} Q${x},${y} ${x+r},${y} Z`;
+  }
+
+  function render() {
+    const data = SERIES[state.period];
+    const metric = state.metric;
+    clearSvg();
+
+    const plotW = VBW - MARGIN.left - MARGIN.right;
+    const plotH = VBH - MARGIN.top - MARGIN.bottom;
+    const maxVal = niceMax(Math.max(...data.map(d => metric==='cost'? d.cost : d.tokens), 0.01));
+
+    const ticks = 4;
+    for (let i = 0; i <= ticks; i++) {
+      const v = maxVal * i / ticks;
+      const y = MARGIN.top + plotH - (v/maxVal)*plotH;
+      svg.appendChild(el('line', { class: i===0?'baseline':'gridline', x1: MARGIN.left, x2: VBW-MARGIN.right, y1: y, y2: y }));
+      const t = el('text', { class: 'y-axis-label', x: MARGIN.left-10, y: y+4 });
+      t.textContent = metric==='cost' ? fmtCost(v) : fmtTokens(v);
+      svg.appendChild(t);
+    }
+
+    const n = data.length;
+    const slotW = plotW / n;
+    const barW = Math.max(slotW * 0.58, 3);
+    const gap = (slotW - barW) / 2;
+    const labelStep = n > 20 ? Math.ceil(n/12) : (n > 10 ? 2 : 1);
+
+    data.forEach((d, i) => {
+      const val = metric==='cost' ? d.cost : d.tokens;
+      const barH = (val/maxVal) * plotH;
+      const x = MARGIN.left + i*slotW + gap;
+      const y = MARGIN.top + plotH - barH;
+
+      const hit = el('rect', { class:'bar-hit', x: MARGIN.left+i*slotW, y: MARGIN.top, width: slotW, height: plotH });
+      const fill = el('path', { class:'bar-fill', d: roundedTopPath(x, y, barW, Math.max(barH,1.5), 4) });
+      svg.appendChild(hit);
+      svg.appendChild(fill);
+
+      hit.addEventListener('mouseenter', () => showTooltip(d));
+      hit.addEventListener('mousemove', (e) => positionTooltip(e, fill));
+      hit.addEventListener('mouseleave', () => hideTooltip(fill));
+
+      if (i % labelStep === 0 || n <= 12) {
+        const t = el('text', { class:'axis-label', x: MARGIN.left+i*slotW+slotW/2, y: VBH-MARGIN.bottom+20, 'text-anchor':'middle' });
+        t.textContent = d.shortLabel;
+        svg.appendChild(t);
+      }
+    });
+  }
+
+  function showTooltip(d) {
+    tooltip.innerHTML =
+      '<div class="t-period">' + (state.period==='daily' ? d.label : (state.period==='weekly' ? 'Week of ' + d.label : d.shortLabel)) + '</div>' +
+      '<div class="t-row"><span>Cost</span><span>'+fmtCost(d.cost)+'</span></div>' +
+      '<div class="t-row"><span>Tokens</span><span>'+fmtTokens(d.tokens)+'</span></div>' +
+      '<div class="t-row"><span>Messages</span><span>'+d.messages.toLocaleString('en-US')+'</span></div>';
+    tooltip.hidden = false;
+  }
+  function positionTooltip(e, fillEl) {
+    fillEl.classList.add('hovered');
+    const rect = chartCard.getBoundingClientRect();
+    tooltip.style.left = (e.clientX - rect.left) + 'px';
+    tooltip.style.top = (e.clientY - rect.top) + 'px';
+  }
+  function hideTooltip(fillEl) {
+    fillEl.classList.remove('hovered');
+    tooltip.hidden = true;
+  }
+
+  function renderTable() {
+    const data = SERIES[state.period];
+    tableBody.innerHTML = data.map(d => {
+      const label = state.period==='daily' ? d.label : (state.period==='weekly' ? 'Week of ' + d.label : d.shortLabel);
+      return '<tr><td>'+label+'</td><td>'+fmtCost(d.cost)+'</td><td>'+fmtTokens(d.tokens)+'</td><td>'+d.messages.toLocaleString('en-US')+'</td></tr>';
+    }).join('');
+  }
+
+  function renderAll() { render(); renderTable(); }
+
+  root.querySelectorAll('.segmented').forEach(group => {
+    group.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        group.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        const g = group.getAttribute('data-group');
+        state[g] = btn.getAttribute('data-value');
+        renderAll();
+      });
+    });
+  });
+
+  toggleTableBtn.addEventListener('click', () => {
+    state.showTable = !state.showTable;
+    chartCard.style.display = state.showTable ? 'none' : '';
+    tableWrap.style.display = state.showTable ? '' : 'none';
+    toggleTableBtn.textContent = state.showTable ? 'View as chart' : 'View as table';
+  });
+
+  renderStats();
+  renderAll();
+})();
+</script>

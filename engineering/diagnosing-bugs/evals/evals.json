@@ -1,0 +1,40 @@
+{
+  "skill_name": "diagnosing-bugs",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our /api/invoices/:id/pdf endpoint returns a PDF with the wrong currency symbol for customers in Switzerland (shows € instead of CHF). It started after we upgraded the i18n library last week. Debug this.",
+      "expected_output": "Builds a tight red-capable feedback loop first (failing test or curl asserting the CHF symbol), reproduces and minimises, then generates ranked falsifiable hypotheses before instrumenting.",
+      "expectations": [
+        "Proposes building a feedback loop (e.g. a failing test or curl script) that asserts the exact symptom (CHF vs €) before reading code to form a theory",
+        "Considers a differential or bisection loop across the i18n library upgrade (old vs new version, or git bisect run)",
+        "Plans to minimise the repro until every remaining element is load-bearing",
+        "Plans 3-5 ranked hypotheses each with a falsifiable prediction, shown to the user before testing",
+        "Plans to tag temporary debug logs with a unique prefix (e.g. [DEBUG-xxxx]) and grep them out at cleanup"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The test `OrderQueue processes jobs in priority order` fails maybe once every 30 CI runs, never locally. Can you diagnose it?",
+      "expected_output": "Treats it as non-deterministic: aims to raise the reproduction rate (loop 100x, parallelise, stress, inject sleeps) to get a debuggable loop before hypothesising.",
+      "expectations": [
+        "Frames the goal as raising the reproduction rate rather than getting a clean single repro",
+        "Proposes running the test in a loop (e.g. 100x), in parallel, or under stress / injected sleeps to narrow timing windows",
+        "Refuses to hypothesise about the cause until a red-capable loop with a pinned reproduction rate exists",
+        "Proposes making the loop deterministic where possible (seeding RNG, pinning time, isolating state)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Search on our product catalog page went from ~200ms to ~3s after the last sprint. Figure out why and fix it.",
+      "expected_output": "Follows the perf branch: establish a baseline measurement and bisect rather than add logs, then fix with a regression check and a post-mortem.",
+      "expectations": [
+        "Establishes a baseline timing measurement (timing harness, profiler or query plan) as the feedback loop before guessing",
+        "Proposes bisecting across the sprint's changes (e.g. git bisect run with the timing harness)",
+        "Says logs are usually the wrong tool for performance regressions — measure first, fix second",
+        "Plans to add a regression test before the fix only if a correct seam exists, and to note the absence of a seam as a finding otherwise",
+        "Ends with a post-mortem asking what would have prevented it, handing off to /improve-codebase-architecture if architectural"
+      ]
+    }
+  ]
+}

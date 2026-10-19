@@ -1,0 +1,4 @@
+{
+  "description": "Insyde BMC firmware: bitbake image builds, Gerrit CI retrigger",
+  "requires": { "commands": ["repo"], "any_path": ["~/EVB2700_A2", "~/Vera", "~/OKS", "~/AMDShared"] }
+}

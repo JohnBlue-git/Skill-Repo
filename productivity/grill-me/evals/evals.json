@@ -1,0 +1,38 @@
+{
+  "skill_name": "grill-me",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/grill-me I'm planning to split our monolithic bmcweb patch series (14 commits) into three separate Gerrit topics so reviewers can approve them independently.",
+      "expected_output": "The skill delegates to a grilling session: one question at a time with a recommended answer, no action taken.",
+      "expectations": [
+        "Runs a grilling-style interview (equivalent to the /grilling skill) rather than giving a one-shot critique or list of concerns",
+        "Asks a single question in the response",
+        "Gives a recommended answer for that question",
+        "Does not restructure commits or touch Gerrit"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/grill-me Design: a local cache for repo sync mirrors shared over NFS across 4 build servers, so each server doesn't re-fetch from upstream.",
+      "expected_output": "A relentless, sequential interview on the cache design, starting with a high-leverage decision and recommending an answer.",
+      "expectations": [
+        "Asks only one question at a time",
+        "Each question is paired with the agent's recommended answer",
+        "The first question addresses a decision other choices depend on (e.g. concurrency/locking on NFS, mirror freshness, failure mode when NFS is down)",
+        "Does not propose a full design document or implementation before the user confirms shared understanding"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/grill-me My plan for next sprint: rewrite the gerrit-ci-retrigger skill's report.py in Go for speed.",
+      "expected_output": "The agent grills the plan, looking up checkable facts itself (e.g. what report.py does, where time goes) and only asking the user about decisions.",
+      "expectations": [
+        "Looks up (or states it will look up) facts about report.py from the filesystem rather than asking the user what the script does",
+        "Asks a single decision question, not several",
+        "Includes a recommended answer with that question",
+        "Does not begin rewriting the script"
+      ]
+    }
+  ]
+}

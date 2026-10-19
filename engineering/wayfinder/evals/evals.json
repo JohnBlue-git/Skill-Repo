@@ -1,0 +1,40 @@
+{
+  "skill_name": "wayfinder",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/wayfinder We want to move our whole product off Firebase (auth, Firestore, Cloud Functions, storage) onto something self-hosted — probably Postgres + something for auth. No idea yet what the target stack is or how we'd migrate 40k users without forcing password resets.",
+      "expected_output": "Charts a map: grills to name the destination, grills breadth-first for the frontier, creates a wayfinder:map issue with Destination/Notes/Decisions/Not yet specified/Out of scope, creates typed decision tickets, wires blocking in a second pass, fires research subagents, and stops.",
+      "expectations": [
+        "Starts by naming the destination via /grilling and /domain-modeling before charting tickets",
+        "Creates a single map issue labelled wayfinder:map with sections Destination, Notes, Decisions so far (empty), Not yet specified, Out of scope",
+        "Creates child decision tickets each with a '## Question' body and a wayfinder:<type> label (research / prototype / grilling / task), then wires blocking edges in a second pass",
+        "Fires /research subagents for research tickets (e.g. password-hash migration compatibility of auth options) on throwaway research/<name> branches",
+        "Stops after charting without resolving any ticket by hand, and frames tickets as decisions rather than build slices"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/wayfinder continue the map at .scratch/firebase-exit/map.md",
+      "expected_output": "Loads only the map, picks the first frontier ticket, claims it before work, resolves exactly one ticket, records the resolution and context pointer, and graduates fog.",
+      "expectations": [
+        "Loads the map body (low-res view) rather than reading every ticket body up front",
+        "Chooses the first open, unblocked, unclaimed ticket (the frontier) itself since none was named, and claims it (Status: claimed) before doing any work",
+        "Resolves only one ticket this session (unless research tickets)",
+        "Records the answer under '## Answer', sets Status: resolved, and appends a one-line gist + link to the map's Decisions so far",
+        "Graduates any now-specifiable fog from Not yet specified into new tickets and closes/moves any ticket found beyond the destination into Out of scope"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/wayfinder I want to add a 'copy to clipboard' button next to each code block in our docs site.",
+      "expected_output": "Recognises the work is small and clear enough for one session with no fog, so does not create a map and asks the user how they'd like to proceed.",
+      "expectations": [
+        "Names/clarifies the destination briefly before deciding anything",
+        "Concludes that breadth-first exploration surfaces no fog — the way is already clear and fits in one session",
+        "Does not create a wayfinder:map issue or decision tickets",
+        "Stops and asks the user how they'd like to proceed instead of just implementing the button"
+      ]
+    }
+  ]
+}

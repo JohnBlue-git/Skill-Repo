@@ -1,0 +1,40 @@
+{
+  "skill_name": "codebase-design",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our notifications code is spread over NotificationService, NotificationFormatter, NotificationChannelFactory, EmailSender, SmsSender and a NotificationPreferencesHelper — callers in 14 places call 3-4 of these in sequence. I want to redesign the interface so it's easier to test and for agents to navigate. How should I shape it?",
+      "expected_output": "Uses the deep-module vocabulary to propose collapsing the cluster behind a small interface at a clean seam, justified via depth, leverage, locality and the deletion test.",
+      "expectations": [
+        "Uses the terms module, interface, depth, seam and adapter consistently, and avoids 'component', 'service' or 'boundary' as design vocabulary",
+        "Applies the deletion test to at least one of the existing classes (e.g. would deleting the Formatter or Helper concentrate or just move complexity)",
+        "Frames benefits in terms of leverage for the 14 callers and locality for maintainers",
+        "Treats EmailSender/SmsSender as adapters at a seam and notes that two adapters make it a real seam",
+        "States that tests should go through the new interface (the interface is the test surface) rather than testing internal parts"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm about to add a `PaymentGateway` interface in front of our Stripe calls so the order module is testable. Right now Stripe is the only provider and we have no plans for another. Is putting a port there the right seam, and how should tests work?",
+      "expected_output": "Classifies Stripe as a true-external dependency and justifies the port by the production + test-mock adapter pair, applying seam discipline.",
+      "expectations": [
+        "Classifies Stripe as a 'true external' dependency (the fourth dependency category) that is injected as a port with a mock adapter in tests",
+        "Applies 'one adapter means a hypothetical seam, two adapters means a real one', counting the test adapter as the second adapter",
+        "Recommends the order module accept the gateway as a dependency rather than constructing it internally",
+        "Recommends asserting on observable outcomes through the order module's interface rather than internal state"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "We've decided to deepen the `ReportExporter` cluster (CSV, PDF and XLSX exporters plus a shared column-mapping util and a ReportQueryBuilder that hits Postgres). Can you explore a few alternative interfaces for the deepened module before we pick one?",
+      "expected_output": "Follows the Design It Twice pattern: frames the problem space, spawns 3+ parallel sub-agents with differing constraints, then compares on depth, locality and seam placement and gives an opinionated recommendation.",
+      "expectations": [
+        "Frames the problem space (constraints, dependencies with their category, rough illustrative sketch) before designing",
+        "Plans to spawn 3 or more parallel sub-agents each with a different design constraint (e.g. minimise interface, maximise flexibility, optimise for the common caller, ports & adapters)",
+        "Classifies the Postgres dependency as local-substitutable (e.g. PGLite) or otherwise names its dependency category",
+        "Compares the designs on depth, locality and seam placement",
+        "Gives an opinionated recommendation (possibly a hybrid) rather than just a menu"
+      ]
+    }
+  ]
+}

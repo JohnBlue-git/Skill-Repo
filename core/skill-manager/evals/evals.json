@@ -1,0 +1,14 @@
+{
+  "skill_name": "skill-manager",
+  "evals": [
+    { "id": 1, "prompt": "I just cloned my skill repo onto a new build server. Which skill sets should I install here?",
+      "expected_output": "Runs install.sh list, summarises sets with install state and recommendation, and asks before installing.",
+      "expectations": ["Runs ~/skill-repo/scripts/install.sh list", "Reports for each set whether it is recommended on this machine", "Asks the user which sets to install before running install", "Does not create symlinks by hand"] },
+    { "id": 2, "prompt": "remove the bmc skills from this laptop, I don't build firmware here",
+      "expected_output": "Uninstalls the bmc set via install.sh and checks status.",
+      "expectations": ["Uses install.sh uninstall bmc rather than rm on ~/.claude/skills entries", "Runs install.sh status afterwards", "Does not touch skills from other sets"] },
+    { "id": 3, "prompt": "install the engineering set — it says tdd was SKIPPED because ~/.claude/skills/tdd already exists, just fix it",
+      "expected_output": "Shows the conflicting entry and asks before removing it.",
+      "expectations": ["Inspects what ~/.claude/skills/tdd currently is (symlink target or directory)", "Asks the user before removing or replacing the existing entry", "Re-runs install.sh install engineering after the conflict is resolved"] }
+  ]
+}

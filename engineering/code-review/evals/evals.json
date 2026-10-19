@@ -1,0 +1,39 @@
+{
+  "skill_name": "code-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review my branch feature/bulk-invite since main. The commits reference #412 which is the issue for bulk-inviting users from a CSV.",
+      "expected_output": "Plans a two-axis review (Standards and Spec) of git diff main...HEAD, run as two parallel sub-agents, reported side by side without reranking.",
+      "expectations": [
+        "Uses a three-dot diff against the fixed point (git diff main...HEAD) and lists commits with git log main..HEAD",
+        "Validates the fixed point resolves and the diff is non-empty before spawning sub-agents",
+        "Fetches issue #412 as the spec source for the Spec axis",
+        "Spawns Standards and Spec reviews as two parallel sub-agents",
+        "Presents results under separate '## Standards' and '## Spec' headings without merging or reranking across axes"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can you do a code review of the last 5 commits on this branch? There's no ticket for it, it was a quick refactor of the pricing module.",
+      "expected_output": "Reviews HEAD~5...HEAD on the Standards axis including the Fowler smell baseline, skips the Spec sub-agent and notes no spec is available.",
+      "expectations": [
+        "Uses HEAD~5 as the fixed point",
+        "Skips the Spec sub-agent and reports 'no spec available' (or equivalent) since the user said there is no ticket",
+        "Includes the Fowler code-smell baseline (e.g. Feature Envy, Data Clumps, Primitive Obsession, Shotgun Surgery) in the Standards review",
+        "Treats baseline smells as judgement calls (e.g. 'possible Feature Envy') rather than hard violations",
+        "Looks for repo-documented standards (e.g. CONTRIBUTING.md, CODING_STANDARDS.md) and notes they override the smell baseline"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "review my changes please",
+      "expected_output": "Asks the user for the fixed point (commit, branch, tag) to diff against rather than guessing.",
+      "expectations": [
+        "Asks the user which fixed point (commit SHA, branch, tag, or merge-base) to review since, rather than assuming one",
+        "Describes that the review will cover two axes: Standards and Spec",
+        "Mentions looking for the originating spec via issue references in commit messages, a passed path, or docs/specs/.scratch files"
+      ]
+    }
+  ]
+}

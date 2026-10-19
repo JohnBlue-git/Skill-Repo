@@ -1,0 +1,39 @@
+{
+  "skill_name": "teach",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/teach Yocto bitbake recipes",
+      "expected_output": "In an empty workspace, the agent first establishes the mission by asking why the user wants to learn this, before producing lessons.",
+      "expectations": [
+        "Recognises MISSION.md is missing/empty and asks the user why they want to learn the topic before writing any lesson",
+        "Plans to record the answer in MISSION.md using the mission format (Why / Success looks like / Constraints / Out of scope)",
+        "Plans to gather high-trust resources (e.g. Yocto Project docs, BitBake User Manual) into RESOURCES.md rather than relying on parametric knowledge",
+        "Does not immediately dump a long tutorial in chat"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/teach next lesson please (workspace already has MISSION.md: 'Debug failing OpenBMC image builds at work without asking seniors', RESOURCES.md with the BitBake manual, learning-records/0001-knows-basic-bitbake-commands.md, lessons/0001-what-is-a-recipe.html, and assets/style.css)",
+      "expected_output": "The agent reads existing state, picks the next lesson in the zone of proximal development, and writes lessons/0002-*.html reusing assets.",
+      "expectations": [
+        "Reads (or plans to read) MISSION.md and learning-records/ to choose the next topic in the user's zone of proximal development",
+        "Names the new lesson file lessons/0002-<dash-case-name>.html (incrementing the number)",
+        "Plans to link the existing assets/style.css (reuse components) rather than inlining a new stylesheet",
+        "Lesson includes an interactive feedback element (e.g. quiz or practice task) and a recommended primary source",
+        "Lesson includes a reminder to ask the agent follow-up questions and links to other lessons/reference docs"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/teach I want to learn Rust. Actually I already know ownership and borrowing well from a previous job, so skip that. The reason: I need to ship an internal CLI tool for my team in Rust by March.",
+      "expected_output": "The agent captures the mission and prior knowledge in the workspace files and plans a first lesson that skips ownership basics.",
+      "expectations": [
+        "Writes (or plans to write) MISSION.md with the concrete goal of shipping an internal Rust CLI by March",
+        "Records the stated prior knowledge of ownership/borrowing as a learning record named like learning-records/0001-<slug>.md",
+        "The first lesson planned does not re-teach ownership/borrowing and is tied to the CLI mission (e.g. clap/argument parsing, cargo project setup)",
+        "Plans to save the lesson as lessons/0001-<dash-case-name>.html and create a shared stylesheet in ./assets/"
+      ]
+    }
+  ]
+}

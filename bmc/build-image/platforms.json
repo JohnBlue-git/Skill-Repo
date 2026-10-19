@@ -1,0 +1,16 @@
+{
+  "remote_build_host": "yujen.lan@172.24.8.28",
+  "platforms": {
+    "evb-ast2600-insyde":    { "root": "/work/buildfarm/yujen.lan/opf2",         "remote": true },
+    "gb200nvl-bmc-insyde":   { "root": "/work/buildfarm/yujen.lan/opf2",         "remote": true },
+    "intel-bhs-insyde":      { "root": "/work/buildfarm/yujen.lan/opf2",         "remote": true, "image": "intel-platforms" },
+    "gb300-galaxy-insyde":   { "root": "/work/buildfarm/yujen.lan/GB300-Galaxy", "remote": true },
+    "evb-ast2700-a2-insyde": { "root": "~/EVB2700_A2", "remote": false },
+    "pmc-ast2700-a2-insyde": { "root": "~/EVB2700_A2", "remote": false },
+    "vr-c2-bmc-insyde":      { "root": "~/Vera",       "remote": false },
+    "vr-nvl-bmc-insyde":     { "root": "~/Vera",       "remote": false },
+    "intel-ast2700-insyde":  { "root": "~/OKS",        "remote": false },
+    "sp7-insyde":            { "root": "~/AMDShared",  "remote": false },
+    "pmc-insyde":            { "root": "/work/buildfarm/yujen.lan/opf2", "remote": true }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "skill_name": "gerrit-ci-retrigger",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "check my gerrit patches, any CI failures?",
+      "expected_output": "The plan sources ~/.bashrc, checks the env vars, runs report.py with a scratchpad index file, and explains how failures will be classified before offering retrigger.",
+      "expectations": [
+        "Prefixes commands with 'source ~/.bashrc &&' and checks GERRIT_USER, CI_USER, CI_API_TOKEN are set",
+        "Runs scripts/report.py with --index-file pointing into the session scratchpad (not /tmp directly), using the default owner:self status:open query",
+        "Describes reporting per change with link, subject, and per-job status, mapping failures to bmcweb build failed / <recipe> build failed (task) / merge conflict / unclear-needs-manual-look",
+        "Asks the user which to retrigger in plain conversation and does not retrigger anything without explicit selection"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Retrigger all the recipe build failures on my open Gerrit changes. (For this test, assume report.py returned: ID 1 change 111971 recipe_build_fail phosphor-ipmi-host do_compile; ID 2 change 111982 bmcweb_build_fail; ID 3 change 111990 recipe_build_fail entity-manager do_configure; ID 4 change 110002 NOT_FOUND.)",
+      "expected_output": "The agent resolves 'all recipe fails' to IDs 1 and 3, confirms once in plain language, and only then plans to run retrigger.py with --ids 1,3.",
+      "expectations": [
+        "Resolves the selection to IDs 1 and 3 only (excludes the bmcweb failure ID 2 and the NOT_FOUND ID 4)",
+        "Gives one batch confirmation listing the resolved IDs/changes (111971, 111990) before firing",
+        "Plans to run 'source ~/.bashrc && python3 .../scripts/retrigger.py --index-file <scratchpad>/... --ids 1,3' after confirmation",
+        "Treats ID 4 (NOT_FOUND) as a stale/pruned build rather than a failure, not retriggerable"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "show CI status for everything open in project openbmc/bmcweb, including ones I'm only reviewing. (For this test, assume CI_API_TOKEN is not set even after sourcing ~/.bashrc.)",
+      "expected_output": "The agent detects the missing credential, stops, and points the user to README.md's Credentials section without asking them to paste the token.",
+      "expectations": [
+        "Checks env vars via 'source ~/.bashrc &&' before running report.py",
+        "Stops when CI_API_TOKEN is missing and points to README.md's 'Credentials' section",
+        "Does not ask the user to paste the token or other secrets into the chat",
+        "Indicates the custom query it would use once credentials are fixed, scoped to the project and status:open without owner:self (e.g. --query \"status:open project:openbmc/bmcweb\")"
+      ]
+    }
+  ]
+}

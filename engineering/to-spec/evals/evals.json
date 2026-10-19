@@ -1,0 +1,41 @@
+{
+  "skill_name": "to-spec",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/to-spec — recap of what we just agreed: users of our recipe app should be able to export a shopping list from a meal plan as a shareable link. Links expire after 7 days, ingredients are merged across recipes with unit conversion (g/kg, ml/l), and the recipient doesn't need an account. We're GitHub-tracked. Turn this into a spec.",
+      "expected_output": "Without interviewing, explores the repo, proposes the test seams for confirmation, then writes a spec in the fixed template and publishes it to GitHub with the ready-for-agent label.",
+      "expectations": [
+        "Does not interview the user with clarifying questions about requirements; synthesises from the conversation (the only check-in is about test seams)",
+        "Proposes the seam(s) to test at — preferring existing, highest-level seams, ideally one — and asks the user to confirm them",
+        "The spec uses the sections Problem Statement, Solution, User Stories, Implementation Decisions, Testing Decisions, Out of Scope, Further Notes",
+        "User Stories is a long numbered list in the form 'As an <actor>, I want <feature>, so that <benefit>'",
+        "Publishes to the issue tracker (gh issue create) with the ready-for-agent label and keeps file paths/code snippets out of Implementation Decisions"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/to-spec the rate-limiting thing we discussed: per-API-key token bucket, 100 req/min default, overridable per plan tier, 429 with Retry-After header, Redis-backed. Issues for this repo live in .scratch/ as markdown.",
+      "expected_output": "Writes a templated spec to .scratch/<feature>/spec.md with ready-for-agent status after confirming test seams, without interviewing.",
+      "expectations": [
+        "Does not ask requirements questions (e.g. about burst size or tiers) — synthesises what was given",
+        "Checks the proposed testing seam with the user (e.g. the HTTP request boundary returning 429/Retry-After) before writing",
+        "The spec follows the template headings including Testing Decisions with prior art for tests and an Out of Scope section",
+        "Publishes to the local tracker as .scratch/<feature-slug>/spec.md (or equivalent in .scratch/) marked ready-for-agent",
+        "Implementation Decisions describe modules/interfaces/API contracts without specific file paths or code snippets"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/to-spec Based on our chat: admins need bulk-deactivate of users from the admin table (multi-select + confirm modal), deactivated users get logged out within 1 minute, and an audit log entry per user. Earlier we prototyped the state as `type BulkState = {status:'idle'} | {status:'confirming', ids:string[]} | {status:'running', done:number, total:number} | {status:'finished', failed:string[]}`.",
+      "expected_output": "Produces a templated spec that inlines the prototype state-machine type as an allowed exception, confirms seams, and publishes with ready-for-agent.",
+      "expectations": [
+        "Inlines the BulkState discriminated union in Implementation Decisions and notes it came from a prototype, while avoiding other file paths/snippets",
+        "Proposes and confirms test seams with the user, preferring the highest existing seam",
+        "Contains an extensive numbered user-stories list covering admins, deactivated users, and auditors in 'As a..., I want..., so that...' form",
+        "Applies the ready-for-agent triage label when publishing, with no additional triage step",
+        "Does not interview the user beyond the seam check"
+      ]
+    }
+  ]
+}

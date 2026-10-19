@@ -1,0 +1,41 @@
+{
+  "skill_name": "to-tickets",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/to-tickets Spec: add 'saved searches' to our job board. Users can save a search (filters + keyword), see them in a sidebar, rename/delete them, and opt into a daily email digest of new matches. Stack: Rails + Postgres + React. Tracker is local markdown in .scratch/.",
+      "expected_output": "Drafts tracer-bullet vertical slices with blocking edges, quizzes the user on granularity/edges, then writes one file per ticket under .scratch/saved-searches/issues/NN-slug.md.",
+      "expectations": [
+        "Tickets are vertical slices cutting through schema, API, UI and tests (e.g. 'save a search and see it in the sidebar'), not horizontal layers like 'create DB tables' / 'build API' / 'build UI'",
+        "Each ticket lists Title, Blocked by (or 'None — can start immediately'), and What it delivers",
+        "Asks the user whether granularity is right, whether blocking edges are correct, and whether to merge/split tickets before publishing",
+        "Publishes one file per ticket at .scratch/<feature-slug>/issues/<NN>-<slug>.md numbered from 01 in dependency order, never a single combined file",
+        "Each local ticket has 'What to build', 'Blocked by', 'Status: ready-for-agent', and checkbox acceptance criteria"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/to-tickets We need to rename the `customer_id` column to `account_id` across the whole monorepo — it's referenced in ~3,000 places across packages/billing, packages/crm, packages/reporting and the GraphQL schema. Tracker is GitHub.",
+      "expected_output": "Recognises a wide refactor and sequences it as expand-contract tickets with migrate batches per package, published as GitHub issues with native blocking links.",
+      "expectations": [
+        "Identifies this as a wide refactor (large blast radius) that should not be forced into tracer-bullet vertical slices",
+        "Sequences it as expand–contract: an expand ticket adding account_id alongside customer_id, migrate tickets batched per package each blocked by expand, and a contract ticket blocked by every migrate batch",
+        "Publishes GitHub issues in dependency order (blockers first) using native blocking/sub-issue relationships where available",
+        "Applies the ready-for-agent label to the tickets",
+        "Presents the breakdown for user approval before publishing"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/to-tickets #214 — that's the spec issue for multi-currency pricing on our GitHub repo. Break it down.",
+      "expected_output": "Fetches issue #214 with comments, proposes vertical tickets with blocking edges (prefactoring first), quizzes the user, then creates GitHub issues referencing #214 as parent without modifying it.",
+      "expectations": [
+        "Fetches and reads the full body and comments of issue #214 before drafting",
+        "Looks for prefactoring opportunities and places any prefactor ticket first, blocking the dependent slices",
+        "Each GitHub issue follows the template with Parent (referencing #214), What to build, Acceptance criteria, and Blocked by sections",
+        "Explicitly does not close or modify the parent issue #214",
+        "Avoids specific file paths and code snippets in ticket bodies"
+      ]
+    }
+  ]
+}

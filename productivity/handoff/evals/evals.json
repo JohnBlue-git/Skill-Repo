@@ -1,0 +1,39 @@
+{
+  "skill_name": "handoff",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/handoff next session will finish wiring the remote ssh build path into bitbake-loop.sh and test it on gb300-galaxy-insyde",
+      "expected_output": "A handoff document tailored to finishing the remote ssh build work is written to the OS temp directory, with a suggested skills section.",
+      "expectations": [
+        "Saves (or plans to save) the handoff file under the OS temp directory (e.g. /tmp or $TMPDIR), not in the current workspace/repo",
+        "The document contains a 'Suggested skills' section naming skills the next agent should invoke (e.g. build-image)",
+        "Content is tailored to the stated focus (remote ssh path in bitbake-loop.sh, gb300-galaxy-insyde test) rather than a generic summary",
+        "References existing artifacts (e.g. scripts/bitbake-loop.sh, platforms.json) by path instead of pasting their contents"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/handoff\n\n(Context for the test: earlier in this conversation we set CI_API_TOKEN=11a2b3c4d5e6f7a8b9c0 in ~/.bashrc and debugged why retrigger.py returned HTTP 403 for change 111971.)",
+      "expected_output": "A handoff document summarising the debugging session with all secrets redacted, saved outside the workspace.",
+      "expectations": [
+        "The handoff does not contain the literal token value 11a2b3c4d5e6f7a8b9c0 (it is redacted or replaced with a placeholder)",
+        "Saves the file under the OS temp directory, not the current working directory",
+        "Includes a 'Suggested skills' section (e.g. gerrit-ci-retrigger, diagnosing-bugs)",
+        "Captures the open state of the 403 investigation for change 111971 so a fresh agent can continue"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/handoff the next agent will write the PR description and open the PR. (Context: the spec is in docs/specs/usage-report-weekly.md and the work is committed on branch feat/weekly-rollup, commits a1b2c3d..e4f5a6b.)",
+      "expected_output": "A concise handoff that points to the spec and commits by path/ref rather than duplicating them, focused on opening the PR.",
+      "expectations": [
+        "References docs/specs/usage-report-weekly.md by path instead of copying its contents into the handoff",
+        "References the branch feat/weekly-rollup / commit range instead of reproducing the diff",
+        "Tailors the doc to the next task (writing the PR description and opening the PR)",
+        "Includes a 'Suggested skills' section",
+        "Saves to the OS temp directory rather than the repo"
+      ]
+    }
+  ]
+}

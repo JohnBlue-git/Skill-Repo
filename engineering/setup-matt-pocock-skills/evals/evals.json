@@ -1,0 +1,40 @@
+{
+  "skill_name": "setup-matt-pocock-skills",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/setup-matt-pocock-skills — this is our Next.js app, remote is git@github.com:acme/storefront.git, there's a CLAUDE.md already, and I have the triage skill installed.",
+      "expected_output": "Explores the repo, proposes GitHub as tracker, asks the single default-labels question, defaults single-context domain docs, shows drafts, then edits the existing CLAUDE.md with an Agent skills block.",
+      "expectations": [
+        "The plan explores first (git remote, CLAUDE.md/AGENTS.md, CONTEXT.md, docs/adr/, .claude/agents/, .scratch/, monorepo signals) before writing anything",
+        "Section A recommends GitHub (gh CLI) because the remote is github.com, recorded in .claude/agents/issue-tracker.md, and does not raise the 'PRs as a request surface' flag",
+        "Section B asks exactly one question about keeping the default triage labels (needs-triage, needs-info, ready-for-agent, ready-for-human, wontfix)",
+        "Domain docs default to single-context (CONTEXT.md + docs/adr/) without asking, since no monorepo signals were mentioned",
+        "The plan edits the existing CLAUDE.md with an '## Agent skills' block (Issue tracker / Triage labels / Domain docs subsections) and does not create AGENTS.md"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/setup-matt-pocock-skills for this repo. It's a personal side project with no git remote, there's no CLAUDE.md or AGENTS.md, and I don't have the triage skill.",
+      "expected_output": "Proposes the local-markdown tracker under .scratch/, skips the triage labels section entirely, defaults single-context, and asks which of CLAUDE.md/AGENTS.md to create.",
+      "expectations": [
+        "Recommends the local-markdown issue tracker (issues as files under .scratch/<feature>/) given no remote",
+        "Skips Section B (triage labels) entirely and does not write .claude/agents/triage-labels.md or a '### Triage labels' sub-block",
+        "Asks the user whether to create CLAUDE.md or AGENTS.md rather than picking one itself",
+        "Plans to write .claude/agents/issue-tracker.md and .claude/agents/domain.md from the skill's seed templates after showing drafts for confirmation"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/setup-matt-pocock-skills — we're on gitlab.internal.acme.io, pnpm monorepo with packages/api, packages/web, packages/worker each with their own src/. AGENTS.md exists and already has an ## Agent skills section from an earlier attempt. Our GitLab uses labels like triage::new and triage::blocked-on-reporter. triage skill is installed.",
+      "expected_output": "Proposes GitLab (glab), collects triage label overrides after a 'no' on defaults, offers multi-context with CONTEXT-MAP.md, and updates the existing Agent skills block in AGENTS.md in place.",
+      "expectations": [
+        "Recommends GitLab via the glab CLI because the remote is a self-hosted GitLab host",
+        "Asks the one default-labels question and, given existing labels, collects overrides mapping e.g. triage::new -> needs-triage and triage::blocked-on-reporter -> needs-info so triage reuses existing labels",
+        "Because of pnpm workspace/packages signals, offers a multi-context layout (root CONTEXT-MAP.md pointing to per-package CONTEXT.md) and confirms with the user",
+        "Updates the existing '## Agent skills' block in AGENTS.md in place rather than appending a duplicate, and does not create CLAUDE.md",
+        "Takes the sections one at a time (A, then B, then C), each led with a recommended answer"
+      ]
+    }
+  ]
+}

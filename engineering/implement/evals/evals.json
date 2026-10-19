@@ -1,0 +1,39 @@
+{
+  "skill_name": "implement",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/implement .scratch/csv-export/issues/02-export-endpoint.md — it's the ticket for adding GET /reports/:id/export.csv. Blocker 01 is already done.",
+      "expected_output": "Plans to build the ticket test-first via /tdd at pre-agreed seams, typecheck and run single test files regularly, run the full suite once at the end, run /code-review, then commit to the current branch.",
+      "expectations": [
+        "Plans to use /tdd red-green slices, one test then one minimal implementation at a time",
+        "Plans to agree/confirm the seams under test before writing tests",
+        "Plans to run typechecking and single test files regularly, and the full test suite once at the end",
+        "Plans to run /code-review on the work after implementation",
+        "Plans to commit to the current branch rather than creating a new branch or PR"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/implement the spec in docs/specs/password-reset.md — magic-link password reset with 15-minute token expiry and single-use tokens.",
+      "expected_output": "Reads the spec, proposes seams for TDD (e.g. token issuing/consuming), builds in vertical slices, then reviews with /code-review and commits.",
+      "expectations": [
+        "Reads the spec file first and derives behaviours (expiry, single-use) to test",
+        "Proposes specific seams for tests (e.g. a token service interface or the reset HTTP endpoint) and asks to confirm them",
+        "Works in vertical slices rather than writing all tests first then all implementation",
+        "Plans a final /code-review (Standards + Spec axes) against the spec before committing"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/implement GitHub issue #88: add a `--dry-run` flag to our `migrate` CLI command that prints the SQL it would run without executing it.",
+      "expected_output": "Fetches the issue, implements test-first at an agreed seam, typechecks regularly, runs the full suite at the end, reviews via /code-review and commits on the current branch.",
+      "expectations": [
+        "Plans to fetch issue #88 as the source of requirements",
+        "Plans to drive implementation with /tdd at a pre-agreed seam (e.g. CLI invocation output or a migration-planning function)",
+        "Distinguishes running single test files during work from running the full test suite once at the end",
+        "Ends with /code-review followed by a commit to the current branch"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "skill_name": "writing-great-skills",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/writing-great-skills Review this skill description and tighten it: \"description: Helps with test-driven development. Use when the user wants to build features using TDD, asks for test-first development, wants to write tests before code, or mentions red-green-refactor. This skill is great for writing tests.\"",
+      "expected_output": "The agent rewrites the description by collapsing synonym triggers into distinct branches and cutting identity text, using the skill's vocabulary.",
+      "expectations": [
+        "Identifies that 'TDD', 'test-first development', and 'write tests before code' are duplication of one branch and collapses them",
+        "Cuts the no-op/identity sentence ('This skill is great for writing tests')",
+        "Front-loads a leading word (e.g. TDD / red-green-refactor) in the rewritten description",
+        "Uses the skill's terms such as 'duplication', 'branch', 'context load', or 'leading word' in the explanation"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/writing-great-skills My deploy skill has 9 steps and the agent keeps skipping the verification in step 4 and rushing to step 9 (post the release notes). Step 4 currently says 'Verify the deployment looks good.' How do I fix it?",
+      "expected_output": "The agent diagnoses premature completion and prescribes sharpening the completion criterion first, splitting by sequence only if that fails.",
+      "expectations": [
+        "Names the failure mode as premature completion",
+        "First recommends making step 4's completion criterion checkable/exhaustive (e.g. concrete health checks that tell done from not-done) instead of 'looks good'",
+        "Mentions splitting by sequence (hiding post-completion steps) only as a second resort if the rush persists after sharpening",
+        "Proposes a concrete rewritten step 4 text"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/writing-great-skills I have 12 user-invoked skills now and keep forgetting which exist. Also one of them, 'review', has a SKILL.md that's 600 lines with a big glossary and per-language rules. And it has lines like 'Don't forget to not skip files.' What should I change?",
+      "expected_output": "The agent recommends a router skill for cognitive load, progressive disclosure for sprawl, and positive phrasing to fix negation/no-op lines.",
+      "expectations": [
+        "Recommends a router skill (one user-invoked skill naming the others and when to use each) to address cognitive load",
+        "Diagnoses the 600-line SKILL.md as sprawl and recommends progressive disclosure, e.g. moving the glossary to GLOSSARY.md and per-language rules behind context pointers (branch-based)",
+        "Flags 'Don't forget to not skip files' as negation and/or a no-op, and rewrites it positively (e.g. 'Review every changed file')",
+        "Does not recommend making the skills model-invoked merely to avoid remembering them without discussing the context-load tradeoff"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "skill_name": "improve-codebase-architecture",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/improve-codebase-architecture",
+      "expected_output": "Scopes via git log hot spots, explores with Explore sub-agents, then writes a self-contained HTML report of deepening candidates to the temp dir and asks which to explore.",
+      "expectations": [
+        "Scopes the scan by walking recent git history (git log --oneline) to find hot spots, since no direction was given",
+        "Reads CONTEXT.md and ADRs before exploring, and plans to use Explore sub-agents to walk the codebase",
+        "Plans to write a self-contained HTML report to $TMPDIR (or /tmp) named architecture-review-<timestamp>.html and open it with xdg-open/open",
+        "Each candidate card includes Files, Problem, Solution, Benefits, a Before/After diagram, and a Strong / Worth exploring / Speculative badge, with a Top recommendation section",
+        "Does not propose interfaces yet and ends by asking 'Which of these would you like to explore?'"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/improve-codebase-architecture focus on the src/billing area — every change there touches like 6 files and the tests are all mocks.",
+      "expected_output": "Takes the named direction (src/billing) without git-log inference, applies the deletion test and deep-module vocabulary, and produces the HTML candidate report.",
+      "expectations": [
+        "Takes src/billing as the scope and skips inferring hot spots from git history",
+        "Applies the deletion test to suspected shallow modules in billing",
+        "Uses codebase-design vocabulary (module, interface, depth, seam, adapter, leverage, locality) and avoids 'service', 'component', 'API' or 'boundary'",
+        "Frames benefits in terms of locality and leverage and how tests would improve (e.g. replacing mock-heavy tests with tests at the deepened interface)",
+        "Uses Tailwind and Mermaid via CDN for the HTML report with before/after diagrams per candidate"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/improve-codebase-architecture — note we have docs/adr/0004-separate-read-and-write-models.md, please respect it. Mainly worried about the order intake code.",
+      "expected_output": "Scopes to order intake, respects ADR-0004 and only surfaces conflicting candidates with a clear warning callout, then moves to a grilling loop with domain-modeling side effects once a candidate is picked.",
+      "expectations": [
+        "Reads ADR-0004 and does not re-litigate it, only surfacing a conflicting candidate with an explicit 'contradicts ADR-0004 — but worth reopening because…' style callout",
+        "Names modules using CONTEXT.md domain vocabulary (e.g. 'the Order intake module') rather than class names or 'service'",
+        "Describes that after the user picks a candidate it will run a /grilling loop through constraints, seam placement and surviving tests",
+        "Mentions offering an ADR if the user rejects a candidate for a load-bearing reason, so future reviews don't re-suggest it"
+      ]
+    }
+  ]
+}

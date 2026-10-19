@@ -1,0 +1,40 @@
+{
+  "skill_name": "tdd",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Let's build a discount-code feature for our checkout service test-first. Codes can be percentage or fixed amount, have an expiry date, and a max-uses count. TypeScript + vitest.",
+      "expected_output": "Reads CONTEXT.md, proposes the public seams to test and confirms them with the user before writing any test, then works one vertical red-green slice at a time.",
+      "expectations": [
+        "Before writing any test, the plan lists the seams (public interfaces, e.g. the checkout/applyDiscount entry point) and asks the user to confirm them",
+        "Works in vertical slices: one failing test, then minimal code to pass, then the next test — explicitly not writing all tests up front (horizontal slicing)",
+        "Tests assert through the public interface with independently-known expected values (e.g. a worked example like 20% off 50.00 = 40.00), not recomputing the formula in the assertion",
+        "Refactoring is left out of the red-green loop and deferred to a review stage",
+        "Mentions reading CONTEXT.md / ADRs if present so test names use the project's domain vocabulary"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Bug: our `parseDuration('1h30m')` returns 5400000 but `parseDuration('90m')` returns 90 — should be milliseconds too. Fix it with TDD, red-green-refactor style. Also I was thinking we should spy on the internal `unitToMs` helper to make sure it's called.",
+      "expected_output": "Writes a failing test at the parseDuration public seam reproducing the bug, fixes minimally, and pushes back on spying on the internal helper.",
+      "expectations": [
+        "Confirms the seam under test (parseDuration's public interface) with the user before writing the test",
+        "The first step is a failing (red) test reproducing parseDuration('90m') === 5400000 using a literal expected value",
+        "Pushes back on spying on the internal unitToMs helper as an implementation-coupled anti-pattern that would break on refactor without behaviour change",
+        "Writes only enough code to make the test pass, with no speculative extra features",
+        "Treats refactoring as outside the red-green loop (deferred to review / code-review stage) despite the 'red-green-refactor' wording"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I want integration tests for our orders API (Express + Postgres). Plan is: I'll write about 25 tests covering every endpoint and edge case first, then we implement the new 'cancel order' flow. For checking the result we can just query the orders table directly. Sound good?",
+      "expected_output": "Pushes back on horizontal slicing and DB side-channel assertions, proposes agreeing a few seams on critical paths, and works one tracer-bullet test at a time.",
+      "expectations": [
+        "Identifies writing ~25 tests up front as horizontal slicing and proposes vertical slices / tracer bullets instead (one test -> one implementation -> repeat)",
+        "Flags querying the orders table directly as verifying through a side channel (implementation-coupled) and proposes asserting via the HTTP API instead",
+        "Proposes agreeing a small set of seams focused on critical paths rather than testing every edge case, and asks the user to confirm them",
+        "Uses the term 'seam' (or equivalent explicit public-boundary agreement) before any test is written"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "skill_name": "domain-modeling",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "In our clinic booking app people keep saying 'appointment', 'booking', 'slot' and 'visit' interchangeably and it's causing bugs. Help me pin down the terminology for the project.",
+      "expected_output": "Challenges the overloaded terms with concrete edge-case scenarios and records resolved terms in CONTEXT.md as a glossary with _Avoid_ lists.",
+      "expectations": [
+        "Proposes distinct canonical terms and asks the user to choose rather than silently picking (e.g. is a Slot an available time vs a Booking a claimed one)",
+        "Invents concrete edge-case scenarios (e.g. a cancelled booking, a walk-in with no booking, a double-booked slot) to force precise boundaries",
+        "Plans to write resolved terms into CONTEXT.md immediately as each is resolved, not batched at the end",
+        "Uses the CONTEXT.md format: bold term, one-to-two-sentence definition, and an _Avoid_ line listing rejected synonyms",
+        "Keeps implementation details (tables, classes, code) out of CONTEXT.md"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We just decided to store all money amounts as integer minor units (cents) with an ISO currency code instead of decimals, after a long argument about rounding in multi-currency invoices. Can you record that?",
+      "expected_output": "Checks the three ADR criteria (hard to reverse, surprising, real trade-off), finds them met, and writes a short sequential ADR in docs/adr/.",
+      "expectations": [
+        "Evaluates the decision against the three ADR criteria: hard to reverse, surprising without context, and the result of a real trade-off",
+        "Records it as an ADR under docs/adr/ with a sequential numbered filename like 0001-money-as-minor-units.md (or next free number)",
+        "Keeps the ADR short — a title plus 1-3 sentences of context, decision and why — rather than a long templated document",
+        "Does not put the storage decision into CONTEXT.md as a glossary entry (CONTEXT.md is not for implementation decisions)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our CONTEXT.md defines 'Cancellation' as the customer withdrawing an entire Order before shipment. I now want to support cancelling individual line items after one item ships. Let's model that.",
+      "expected_output": "Calls out the conflict with the existing glossary definition, cross-checks the code, and sharpens the language (e.g. a new term vs redefining Cancellation) before updating CONTEXT.md.",
+      "expectations": [
+        "Explicitly calls out that the request conflicts with the existing glossary definition of Cancellation and asks which meaning is intended",
+        "Proposes a precise canonical term for partial cancellation (or a redefinition) and lists rejected synonyms under _Avoid_",
+        "Plans to cross-reference the code to see whether it currently only cancels entire Orders and surfaces any contradiction",
+        "Probes boundaries with concrete scenarios (e.g. cancelling the last unshipped item, refunds after partial shipment)",
+        "Only offers an ADR if the change meets all three criteria, rather than reflexively creating one"
+      ]
+    }
+  ]
+}

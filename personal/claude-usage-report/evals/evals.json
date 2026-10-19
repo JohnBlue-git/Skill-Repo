@@ -1,0 +1,39 @@
+{
+  "skill_name": "claude-usage-report",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "How much have I spent on Claude Code this month? Show me a chart.",
+      "expected_output": "The plan runs build_report.py into the scratchpad, checks the stderr summary, publishes the HTML as an Artifact, and reports headline numbers with the estimate caveats.",
+      "expectations": [
+        "Runs scripts/build_report.py with an output path in the session scratchpad (e.g. <scratchpad>/usage_report.html), not a permanent location",
+        "Checks the stderr summary (files scanned, active days, estimated cost) before publishing, and would not publish if files scanned is 0",
+        "Publishes the HTML via the Artifact tool with a description naming the date range and estimated total cost",
+        "States cost is an estimate from scripts/pricing.json API list prices, not an actual bill on a Pro/Max plan",
+        "States the report covers only this machine's ~/.claude/projects"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Give me a weekly graph of my Claude token usage since I started using Claude Code, and also save a copy of the HTML to ~/reports/claude-usage.html.",
+      "expected_output": "Because the user explicitly asked for a local copy, the plan writes/copies the report to ~/reports/claude-usage.html in addition to publishing the Artifact.",
+      "expectations": [
+        "Uses the skill's build_report.py script to reconstruct history from ~/.claude/projects JSONL transcripts rather than relying on /usage",
+        "Writes or copies the HTML to ~/reports/claude-usage.html because the user explicitly asked to keep a local copy",
+        "Still publishes the report as an Artifact",
+        "Reports headline numbers in text (total cost, total tokens, active days, most expensive period)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "What's my Claude usage cost over the last few months? I noticed Opus pricing changed recently, so I'm not sure the numbers are right.",
+      "expected_output": "The agent builds the report but flags possible stale pricing in scripts/pricing.json and verifies current rates rather than guessing.",
+      "expectations": [
+        "Runs build_report.py and plans to publish the result as an Artifact",
+        "Flags that pricing may be stale and points at scripts/pricing.json",
+        "Does not guess new rates; proposes checking current pricing (e.g. claude-api skill or the platform.claude.com pricing page) or asking the user before editing pricing.json",
+        "Includes the estimate-not-a-bill and this-machine-only caveats"
+      ]
+    }
+  ]
+}

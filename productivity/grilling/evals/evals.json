@@ -1,0 +1,38 @@
+{
+  "skill_name": "grilling",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Grill me on this: I want to migrate our team's BMC firmware CI from Jenkins to GitHub Actions self-hosted runners next quarter, mostly to cut the Jenkins maintenance burden.",
+      "expected_output": "The agent starts a one-question-at-a-time interview about the migration plan, offering its own recommended answer to each question and not starting any migration work.",
+      "expectations": [
+        "Asks exactly one question in its response rather than a list of several questions",
+        "Provides its own recommended answer alongside the question it asks",
+        "The question targets a foundational branch of the decision tree (e.g. the real driver, scope, or a dependency other decisions hinge on) rather than a minor detail",
+        "Does not produce a migration plan, workflow files, or implementation steps before shared understanding is confirmed"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Stress-test my idea: in this repo I want to replace the hand-written bash build scripts under scripts/ with a single Python CLI. Poke holes in it.",
+      "expected_output": "The agent looks up facts about the existing scripts itself, then asks the user one decision question at a time with a recommendation.",
+      "expectations": [
+        "Inspects (or states it will inspect) the scripts/ directory to learn facts like how many scripts exist and what they do, instead of asking the user about them",
+        "Asks only one decision question in the response, waiting for the user's answer",
+        "Includes a recommended answer for that question",
+        "Does not start writing the Python CLI or modifying scripts"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I've decided to adopt a 4-day work week for my 6-person firmware team starting January. Grill me before I announce it. (For this test, after your first question assume I answer: 'Fridays off, same total hours spread over Mon-Thu'.)",
+      "expected_output": "The agent conducts a sequential grilling where each follow-up builds on the previous answer, with recommendations, and does not declare the plan finished or act on it without user confirmation.",
+      "expectations": [
+        "Asks questions one at a time rather than dumping a questionnaire",
+        "Each question comes with the agent's recommended answer",
+        "The follow-up question after the assumed answer depends on that answer (e.g. on-call/escalation coverage on Fridays, 10-hour-day fatigue) rather than being an unrelated pre-planned question",
+        "Does not draft the announcement or treat the plan as settled until the user confirms shared understanding"
+      ]
+    }
+  ]
+}

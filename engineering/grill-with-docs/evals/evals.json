@@ -1,0 +1,39 @@
+{
+  "skill_name": "grill-with-docs",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/grill-with-docs I want to add a 'pause subscription' feature to our billing service so customers can pause for up to 3 months instead of cancelling.",
+      "expected_output": "Starts a one-question-at-a-time interview with a recommended answer per question, looking up facts in the repo and capturing resolved terms in CONTEXT.md as it goes.",
+      "expectations": [
+        "Asks exactly one question at a time rather than a list of questions",
+        "Provides its own recommended answer alongside each question",
+        "Plans to look up facts in the codebase (e.g. existing Subscription states, CONTEXT.md) instead of asking the user for them",
+        "Plans to update CONTEXT.md inline when a term like 'Pause' is resolved, and offer an ADR only for hard-to-reverse, surprising trade-offs",
+        "Does not start implementing until the user confirms shared understanding"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/grill-with-docs Plan: we're going to split our monolith's 'accounts' module into 'identity' (login, SSO) and 'organizations' (teams, seats, billing contact). Grill me on it.",
+      "expected_output": "Grills the decision tree one question at a time, challenges the overloaded 'account' term, and treats the split as a candidate ADR.",
+      "expectations": [
+        "Challenges the overloaded term 'account' and proposes precise canonical terms (e.g. User vs Organization vs Customer)",
+        "Asks one question at a time, each with a recommended answer, walking dependent decisions in order",
+        "Considers whether CONTEXT-MAP.md / multiple contexts are warranted given the split",
+        "Identifies the module split as a candidate ADR because it is hard to reverse, surprising and a real trade-off"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/grill-with-docs I'm thinking of replacing our cron-based nightly inventory sync with an event-driven approach using the existing Kafka cluster.",
+      "expected_output": "Runs a relentless grilling session one question at a time with recommendations, leaving a paper trail of glossary terms and ADRs.",
+      "expectations": [
+        "Asks a single focused first question with a recommended answer rather than dumping a questionnaire",
+        "Mentions it will check the existing code/config (e.g. the cron job, Kafka topics, CONTEXT.md, docs/adr) for facts rather than asking",
+        "Plans to record the cron-to-event-driven decision as an ADR in docs/adr/ if it's agreed, given it is hard to reverse",
+        "Plans to create CONTEXT.md / docs/adr lazily only when there is something to write"
+      ]
+    }
+  ]
+}

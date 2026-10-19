@@ -1,0 +1,40 @@
+{
+  "skill_name": "prototype",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm designing the refund state machine for our marketplace (requested → approved → partially_refunded → refunded, plus disputes from the card network that can arrive at any point). I'm not sure it handles a dispute arriving after a partial refund. Can you prototype it so I can poke at it? Repo is TypeScript with pnpm.",
+      "expected_output": "Chooses the logic branch: a tiny interactive terminal app around a pure, portable state machine/reducer, runnable with one pnpm command, in-memory, printing full state after every action.",
+      "expectations": [
+        "Picks the logic branch (interactive terminal app), not a UI prototype",
+        "States the question being prototyped explicitly at the top of the file or in a README before writing code",
+        "Isolates the logic in a pure, portable module (reducer or explicit state machine) with no I/O, separate from the throwaway TUI",
+        "Makes it runnable with one command via the project's existing tooling (e.g. a pnpm script) and keeps state in memory with no persistence",
+        "Prints the full state after every action"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Prototype a few options for how the new 'Usage & limits' section should look on our existing /settings/billing page in our Next.js app. Not sure if it should be a table, progress bars, or something else.",
+      "expected_output": "Chooses the UI branch, sub-shape A: several radically different variants on the existing /settings/billing route switched by ?variant= and a floating bottom bar.",
+      "expectations": [
+        "Picks the UI branch (several radically different variations), not a logic prototype",
+        "Uses sub-shape A: renders variants inside the existing /settings/billing page rather than creating a new standalone route",
+        "Switches variants via a ?variant= URL search param and a floating bottom bar",
+        "Defaults to around 3 variants (capped at 5) that are radically different from one another",
+        "Skips polish: no tests, no abstractions, and marks the code clearly as a prototype"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Quick prototype: does an append-only ledger model for loyalty points (earn, redeem, expire, reverse) let us compute a correct balance when an earn is reversed after some of those points were already redeemed? Python project, uses uv.",
+      "expected_output": "Logic branch in Python via uv, pure ledger functions, in-memory, state surfaced after each action, and a plan to capture the verdict and prototype on a throwaway branch afterwards.",
+      "expectations": [
+        "Picks the logic branch and uses Python run via the project's existing tooling (e.g. `uv run <path>`) as a single command",
+        "Implements the ledger as pure functions or a reducer over a plain data type, with the TUI importing it rather than the reverse",
+        "Keeps state in memory (no database) and prints the full ledger and balance after each action",
+        "Plans to capture the prototype on a throwaway branch out of main and record the verdict and the question it settled in the issue or a commit"
+      ]
+    }
+  ]
+}

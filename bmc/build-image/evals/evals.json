@@ -1,0 +1,39 @@
+{
+  "skill_name": "build-image",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "build vr-c2-bmc-insyde and gb200nvl-bmc-insyde",
+      "expected_output": "A sequential plan: sync ~/Vera locally then build vr-c2-bmc-insyde, then sync the remote opf2 tree over ssh and build gb200nvl-bmc-insyde, each via the skill scripts in the background.",
+      "expectations": [
+        "Resolves vr-c2-bmc-insyde to local root ~/Vera and gb200nvl-bmc-insyde to /work/buildfarm/yujen.lan/opf2 on remote host yujen.lan@172.24.8.28 (from platforms.json)",
+        "Runs strictly sequentially in the user's order: vr-c2-bmc-insyde fully finishes before gb200nvl-bmc-insyde's sync/build starts",
+        "Uses scripts/repo-sync.sh and scripts/bitbake-loop.sh with run_in_background, passing yujen.lan@172.24.8.28 as the trailing arg only for gb200nvl-bmc-insyde and omitting it for vr-c2-bmc-insyde",
+        "Puts sync/build log files under the session scratchpad directory (e.g. build-vr-c2-bmc-insyde.log)",
+        "Describes the do_cleanall retry behavior (bitbake -b <recipe> -c cleanall then retry, stop if same recipe fails twice)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Can you sync and bitbake evb-ast2600-insyde, intel-bhs-insyde and pmc-insyde in parallel? Don't care about order.",
+      "expected_output": "Because all three share the remote opf2 root, the plan syncs that tree once, then launches three concurrent remote builds, with intel-bhs-insyde using the intel-platforms image.",
+      "expectations": [
+        "Recognises all three platforms share root /work/buildfarm/yujen.lan/opf2 and runs repo-sync.sh only once for that root",
+        "Passes remote host yujen.lan@172.24.8.28 as the last argument to repo-sync.sh and each bitbake-loop.sh call",
+        "Passes 'intel-platforms' as the image argument for intel-bhs-insyde, and the default obmc-phosphor-image (image arg omitted/default) for the other two",
+        "Launches the three builds concurrently only after the single sync succeeds, since the user explicitly asked for parallel"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "bitbake pmc-ast2700-a2-insyde, foo-bmc-insyde, and evb-ast2700-a2-insyde",
+      "expected_output": "The unknown platform is skipped and reported, the shared ~/EVB2700_A2 root is synced once, and the two valid platforms build locally in order.",
+      "expectations": [
+        "Reports foo-bmc-insyde as skipped because it is not in platforms.json, without halting the whole run",
+        "Resolves both pmc-ast2700-a2-insyde and evb-ast2700-a2-insyde to local root ~/EVB2700_A2 with remote: false (no remote host arg)",
+        "Syncs ~/EVB2700_A2 only once (tracks roots already synced) and builds pmc-ast2700-a2-insyde before evb-ast2700-a2-insyde",
+        "States it will report each platform's RESULT: line (BUILD_SUCCEEDED / STOPPED / BUILD_FAILED) as it finishes and give a final summary"
+      ]
+    }
+  ]
+}

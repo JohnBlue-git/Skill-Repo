@@ -1,0 +1,14 @@
+{
+  "skill_name": "skill-maintainer",
+  "evals": [
+    { "id": 1, "prompt": "/skill-maintainer",
+      "expected_output": "Runs check_skills.py with the current model ID, reports due skills, and asks which to refresh without editing anything.",
+      "expectations": ["Runs scripts/check_skills.py with --model set to its current model ID", "Lists due skills with the reason they are due", "Asks which skills to refresh before making changes", "Makes no edits in this run"] },
+    { "id": 2, "prompt": "/skill-maintainer claude-usage-report",
+      "expected_output": "Fetches current pricing docs, works in a worktree on a refresh branch, and leaves merging to the user.",
+      "expectations": ["Fetches the Anthropic pricing page instead of using remembered prices", "Creates a git worktree under .worktrees on a refresh/<date> branch", "Does not edit files in the main ~/skill-repo checkout", "Records the review in reviews.json in the worktree", "Gives merge commands for the user instead of merging"] },
+    { "id": 3, "prompt": "/skill-maintainer build-image",
+      "expected_output": "Tests old and new versions with and without the skill as dry runs, keeping the edit only if it scores at least as well.",
+      "expectations": ["Runs each eval with the skill and as a baseline without it", "Instructs subagents to dry-run and not start real builds", "Keeps the edit only if it passes at least as many expectations as the current version", "Reports before / after / baseline scores in a table"] }
+  ]
+}

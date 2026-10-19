@@ -1,0 +1,39 @@
+{
+  "skill_name": "ask-matt",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/ask-matt I want to add team workspaces to our SaaS app (Next.js + Postgres repo). It's going to touch auth, billing and the dashboard and will probably take a couple of weeks. Where do I start and what's the sequence?",
+      "expected_output": "Routes the user along the main flow: /grill-with-docs, then /to-spec and /to-tickets because it's multi-session, then /implement per ticket with context cleared between tickets.",
+      "expectations": [
+        "Recommends starting with /grill-with-docs (not /grill-me) because there is a codebase",
+        "Identifies this as a multi-session build and routes through /to-spec then /to-tickets before /implement",
+        "Advises clearing context between each /implement ticket while keeping grilling, spec and tickets in one unbroken context window",
+        "Mentions that /implement drives /tdd internally and finishes with /code-review",
+        "Does not route to /wayfinder, or explicitly says wayfinder is for foggier, larger efforts than a scoped feature"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "/ask-matt our checkout endpoint started returning 500s intermittently sometime between last Tuesday's release and today. Nobody can reproduce it locally. Which skill should I use?",
+      "expected_output": "Points to /diagnosing-bugs as the on-ramp, explaining it insists on a tight feedback loop before theorising and may hand off to /improve-codebase-architecture afterwards.",
+      "expectations": [
+        "Recommends /diagnosing-bugs as the skill to use",
+        "Explains that diagnosing-bugs requires a tight feedback loop (a command that goes red on this bug) before hypothesising",
+        "Mentions its post-mortem can hand off to /improve-codebase-architecture when there's no good seam to lock the bug down",
+        "Does not recommend /triage for this (triage is for incoming issues you didn't create, not for actively debugging)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "/ask-matt I'm mid-way through grilling a design for a new rate limiter and we hit a question about whether a token-bucket-per-tenant state model actually handles burst + refill edge cases. I can't settle it by talking. Also my context is getting long (~100k tokens). What do I do?",
+      "expected_output": "Recommends the prototype detour bridged by /handoff in both directions, and flags the smart-zone limit as a reason to hand off rather than push on.",
+      "expectations": [
+        "Recommends a /prototype detour to answer the state-model question with throwaway code",
+        "Recommends /handoff out to a fresh session for the prototype and /handoff back with what was learned",
+        "Mentions the smart zone (~120k tokens) as the reason not to push on in a degrading context",
+        "Distinguishes /handoff (forks to a new session) from /compact (continues in the same conversation)"
+      ]
+    }
+  ]
+}

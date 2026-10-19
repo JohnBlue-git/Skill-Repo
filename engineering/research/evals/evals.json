@@ -1,0 +1,38 @@
+{
+  "skill_name": "research",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Can you research how Stripe's webhook signature verification works — tolerance window, which header, what happens with multiple signatures during secret rotation? We're about to write our own verifier in Go. I'll keep working on the handler skeleton meanwhile.",
+      "expected_output": "Delegates the research to a background agent that reads Stripe's official docs/SDK source and writes a cited Markdown findings file into the repo's notes location.",
+      "expectations": [
+        "The plan spins up a background agent (or subagent run in the background) to do the reading rather than doing all the research inline while the user waits",
+        "The plan names primary sources specifically (Stripe's official webhook docs and/or the official stripe-go / stripe SDK source code) rather than blog posts or Stack Overflow",
+        "The output is a single Markdown file in the repo, with each claim citing its source",
+        "The plan checks for an existing notes/docs convention in the repo (e.g. docs/, notes/, research/) to decide where to save the file, and says where it will go if none exists"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I need to know whether PostgreSQL 16 logical replication supports replicating sequences and DDL changes, or if we still have to handle those manually. Dig into it and write it up so the team can reference it later.",
+      "expected_output": "A background research agent consults the official PostgreSQL 16 docs/release notes/source and writes a cited Markdown file saved per the repo's convention.",
+      "expectations": [
+        "Research is delegated to a background agent so the main session remains free",
+        "Sources are the official PostgreSQL documentation, release notes, or source code / mailing-list commits — not third-party tutorials",
+        "Each finding (sequences, DDL) is traced back to and cited against the source that owns it",
+        "The findings are written to a single Markdown file in the repository, placed following an existing convention or a stated sensible location"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Our repo has a docs/research/ folder with notes like 2026-08-redis-eviction.md. Go find out exactly how the GitHub REST API rate limits work for GitHub App installation tokens vs. personal access tokens, including secondary rate limits.",
+      "expected_output": "Launches a background agent that researches GitHub's official REST API docs and writes a cited note into docs/research/ following the existing date-prefixed naming.",
+      "expectations": [
+        "The research is run by a background agent rather than synchronously in the main conversation",
+        "The new file is saved under docs/research/ and follows the existing naming convention (date-prefixed slug like 2026-10-github-rate-limits.md)",
+        "Sources are GitHub's official documentation (docs.github.com) and/or response headers from the API itself, not secondary write-ups",
+        "Every claim in the findings file carries a citation to its source"
+      ]
+    }
+  ]
+}

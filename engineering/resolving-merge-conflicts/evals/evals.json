@@ -1,0 +1,40 @@
+{
+  "skill_name": "resolving-merge-conflicts",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm mid-rebase of feature/retry-backoff onto main and git stopped on commit 3 of 7 with conflicts in src/http/client.ts and src/http/client.test.ts. Main changed the default timeout from 5s to 10s and my branch added exponential backoff in the same function. Sort it out.",
+      "expected_output": "Inspects the rebase state and history, reads the commits/PRs behind both changes, resolves hunks preserving both the timeout change and backoff, runs checks, and continues the rebase through all 7 commits.",
+      "expectations": [
+        "The plan begins by inspecting the current rebase state (git status, the conflicting files, and git log/history for both sides)",
+        "The plan reads the commit messages and the PRs/issues behind main's timeout change and the backoff change to understand original intent",
+        "The resolution preserves both intents (10s default timeout AND exponential backoff) without inventing new behaviour",
+        "The plan discovers and runs the project's automated checks in order typecheck, then tests, then format, fixing anything broken",
+        "The plan continues the rebase (git rebase --continue) until all remaining commits are applied, and never proposes git rebase --abort"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "git merge origin/release-2.4 into main blew up — conflicts in pyproject.toml, app/billing/invoice.py and alembic/versions/. Honestly I'd rather just abort and redo it next week, but if you can fix it, go ahead.",
+      "expected_output": "Resolves the merge rather than aborting, using commit/PR history for intent, then runs checks and commits the merge.",
+      "expectations": [
+        "The response does not abort the merge (no git merge --abort) and instead commits to resolving it",
+        "The plan traces each conflicting hunk back to its commit messages / PRs / tickets to understand why each side changed it",
+        "Where the two sides are incompatible, the plan picks the side matching the merge's goal (bringing release-2.4 into main) and explicitly notes the trade-off",
+        "The plan runs the project's discovered checks (e.g. mypy/typecheck, pytest, formatter) after resolving",
+        "The plan finishes by staging everything and creating the merge commit"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Cherry-picked nothing, just did `git pull --rebase` on my branch and now there's a conflict in config/feature_flags.yml — upstream removed the `new_checkout` flag, my commit flipped it to true. What now?",
+      "expected_output": "Investigates why upstream removed the flag and why the local commit enabled it, resolves without inventing behaviour, runs checks, and continues the rebase.",
+      "expectations": [
+        "The plan looks at git history / commit messages / the PR that removed new_checkout upstream to learn the original intent (e.g. flag fully rolled out)",
+        "The resolution does not invent a new flag or new behaviour; it either keeps the removal or the enable based on the stated intent and notes the trade-off",
+        "The plan runs the project's automated checks (typecheck, tests, format) after resolving",
+        "The plan stages the file and runs git rebase --continue until the rebase completes, rather than aborting"
+      ]
+    }
+  ]
+}
