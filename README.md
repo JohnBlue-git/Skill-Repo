@@ -1,4 +1,3 @@
-
 # skill-repo
 
 My Claude Code skills, grouped into sets. Each skill is installed as a symlink in `~/.claude/skills`, so after a `git pull` every machine is up to date, and an edit in the repo takes effect immediately.
@@ -13,7 +12,7 @@ skill-repo/
 ├── bmc/                build-image, gerrit-ci-retrigger
 ├── engineering/        third-party: mattpocock/skills
 ├── productivity/       third-party: mattpocock/skills
-├── personal/           claude-usage-report
+├── personal/           claude-usage-report, CLAUDE.md (global instructions)
 └── scripts/            install.sh, check_skills.py
 ```
 
@@ -24,9 +23,14 @@ Each set folder has a `README.md` (for people) and a `set.json` (description, `r
 ```bash
 git clone <this repo> ~/skill-repo
 ~/skill-repo/scripts/install.sh install core
+~/skill-repo/scripts/install.sh claude-md    # link personal/CLAUDE.md as ~/.claude/CLAUDE.md
 ```
 
 Then ask Claude to "set up my skill sets" (skill-manager), or run `scripts/install.sh list` and install the sets you want.
+
+## Updating CLAUDE.md
+
+`~/.claude/CLAUDE.md` is a link to `personal/CLAUDE.md`, so editing either path changes the repo copy. Commit and push the change, then `git pull` on other machines.
 
 ## Keeping skills current
 
