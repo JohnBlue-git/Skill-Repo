@@ -12,6 +12,7 @@ Skills live in `~/skill-repo`, grouped into sets (top-level folders with a `set.
 3. Run `install.sh install <set>...` and/or `install.sh uninstall <set>...`.
 4. If a skill is reported `SKIPPED` because the name is already taken, show that line to the user and ask what to do. Do not remove the existing entry yourself.
 5. Run `install.sh status` and report any `BROKEN` links. Tell the user that newly linked skills may need a new session to show up.
+6. If `status` shows the global CLAUDE.md as `unlinked`, offer to run `install.sh claude-md`, which links `personal/CLAUDE.md` as `~/.claude/CLAUDE.md`. If it reports `SKIPPED`, show the user its output. Do not delete or merge their existing file yourself.
 
 Uninstalling `core` removes this skill too; confirm with the user first if they pick it.
 

@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 # Link skill sets from this repo into ~/.claude/skills, one symlink per skill.
 # A set is any top-level folder with a set.json; a skill is any folder inside it with a SKILL.md.
-# Only symlinks that point into this repo are ever created or removed.
+# Also links personal/CLAUDE.md as ~/.claude/CLAUDE.md (claude-md).
+# Only symlinks that point into this repo are ever created or removed, except that claude-md
+# replaces a regular ~/.claude/CLAUDE.md that is byte-identical to the repo copy.
 set -euo pipefail
 
 REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEST="${CLAUDE_SKILLS_DIR:-$HOME/.claude/skills}"
+CLAUDE_MD="${CLAUDE_MD:-$HOME/.claude/CLAUDE.md}"
 
 usage() {
   cat <<EOF
@@ -14,6 +17,7 @@ Usage: $(basename "$0") <command> [set...]
   install <set>...      link every skill in each set into $DEST
   uninstall <set>...    remove this repo's links for each set
   status                check installed links (ok / broken) and list unmanaged entries
+  claude-md             link personal/CLAUDE.md as $CLAUDE_MD (global instructions)
 EOF
 }
 
@@ -86,6 +90,30 @@ cmd_uninstall() {
   done
 }
 
+# Link personal/CLAUDE.md as the global CLAUDE.md. An identical regular file is replaced;
+# a different one is left alone so nothing is lost.
+cmd_claude_md() {
+  local src="$REPO/personal/CLAUDE.md"
+  [ -f "$src" ] || { echo "missing $src" >&2; return 1; }
+  local q_dst q_src
+  q_dst=$(printf %q "$CLAUDE_MD"); q_src=$(printf %q "$src")
+  if [ -L "$CLAUDE_MD" ] && [ "$(readlink "$CLAUDE_MD")" = "$src" ]; then echo "ok       $CLAUDE_MD"
+  elif [ -L "$CLAUDE_MD" ]; then
+    echo "SKIPPED  $CLAUDE_MD is a symlink to $(readlink "$CLAUDE_MD"); check it, then: rm $q_dst && $0 claude-md" >&2; return 1
+  elif [ ! -e "$CLAUDE_MD" ]; then
+    mkdir -p "$(dirname "$CLAUDE_MD")"; ln -s "$src" "$CLAUDE_MD"; echo "linked   $CLAUDE_MD"
+  elif [ -f "$CLAUDE_MD" ] && cmp -s "$CLAUDE_MD" "$src"; then
+    ln -sf "$src" "$CLAUDE_MD"; echo "linked   $CLAUDE_MD (was an identical copy)"
+  else
+    cat >&2 <<EOF
+SKIPPED  $CLAUDE_MD exists and differs from the repo copy. To merge:
+  diff $q_dst $q_src     # copy what you want to keep into the repo copy
+  rm $q_dst && $0 claude-md
+EOF
+    return 1
+  fi
+}
+
 cmd_status() {
   local l t rc=0
   for l in "$DEST"/*; do
@@ -99,6 +127,12 @@ cmd_status() {
       echo "unmanaged  $(basename "$l")${t:+ -> $t}"
     fi
   done
+  if [ -L "$CLAUDE_MD" ] && [ "$(readlink "$CLAUDE_MD")" = "$REPO/personal/CLAUDE.md" ]; then
+    if [ -f "$REPO/personal/CLAUDE.md" ]; then echo "ok         CLAUDE.md -> personal/CLAUDE.md"
+    else echo "BROKEN     $CLAUDE_MD -> $REPO/personal/CLAUDE.md" >&2; rc=1; fi
+  else
+    echo "unlinked   $CLAUDE_MD (not from this repo; see: install.sh claude-md)"
+  fi
   echo "--- repo: $(git -C "$REPO" branch --show-current 2>/dev/null)"
   git -C "$REPO" status --short 2>/dev/null | head -20
   return $rc
@@ -109,5 +143,6 @@ case "${1:-}" in
   install)   shift; [ $# -gt 0 ] || { usage; exit 1; }; cmd_install "$@" ;;
   uninstall) shift; [ $# -gt 0 ] || { usage; exit 1; }; cmd_uninstall "$@" ;;
   status)    cmd_status ;;
+  claude-md) cmd_claude_md ;;
   *)         usage; exit 1 ;;
 esac
