@@ -7,6 +7,7 @@ My Claude Code skills, grouped into sets. Each skill is installed as a symlink i
 ```
 skill-repo/
 ├── README.md
+├── DESIGN.md           architecture and design choices
 ├── reviews.json        when each skill was last reviewed, and on which model
 ├── core/               skill-manager, skill-maintainer
 ├── bmc/                build-image, gerrit-ci-retrigger
@@ -18,7 +19,7 @@ skill-repo/
 
 Each set folder has a `README.md` (for people) and a `set.json` (description, `requires`, optional `upstream`). Each skill is a `<set>/<skill>/SKILL.md` and can have test prompts in `<skill>/evals/evals.json` (the same format skill-creator uses).
 
-## New machine
+## Install or manage skills
 
 ```bash
 git clone <this repo> ~/skill-repo
@@ -26,13 +27,15 @@ git clone <this repo> ~/skill-repo
 ~/skill-repo/scripts/install.sh claude-md    # link personal/CLAUDE.md as ~/.claude/CLAUDE.md
 ```
 
-Then ask Claude to "set up my skill sets" (skill-manager), or run `scripts/install.sh list` and install the sets you want.
+Open a new Claude Code session, then run `/skill-manager`. The skill lists the available sets, shows which sets are recommended on this machine, and asks which sets to install. It installs only the sets you choose, then checks the links.
+
+You can also manage sets directly with `scripts/install.sh`. Run `scripts/install.sh list` to see the available sets and `scripts/install.sh install <set>` to install one.
 
 ## Updating CLAUDE.md
 
-`~/.claude/CLAUDE.md` is a link to `personal/CLAUDE.md`, so editing either path changes the repo copy. Commit and push the change, then `git pull` on other machines.
+After `scripts/install.sh claude-md` succeeds, `~/.claude/CLAUDE.md` links to `personal/CLAUDE.md`. Edits through either path then change the repository copy. Commit and push the change, then run `git pull` on other machines.
 
-## Keeping skills current
+## Update skills
 
 Run `/skill-maintainer` every ~6 months, or after switching to a new model. It:
 
