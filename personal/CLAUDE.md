@@ -63,3 +63,9 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+## Writing Style
+
+- Write clearly and concisely. Apply ASD-STE100 when writing user-facing technical instructions or when requested.
+- Do not require strict ASD-STE100 compliance for design, architecture, specification, or decision documents. Preserve technical precision, necessary nuance, and the document's purpose.
+- See [ASD-STE100 writing guidance](./ASD-STE100.md) for scope, practical principles, and references.
